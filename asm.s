@@ -1,4 +1,8 @@
-	.file	"asm.c"
+# This file is part of LuHPoS project. This software may be used and distributed
+# according to the terms of the GNU General Public License version 3, incorporated herein by reference
+# at repository: https://github.com/otavioarj/KiInjector
+# =]
+
 	.intel_syntax noprefix
 	.text
 	.globl	_DllCall_stub
