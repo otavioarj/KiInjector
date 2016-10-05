@@ -12,7 +12,7 @@
 #include <Ntsecapi.h>
 
 #ifdef _WIN64
-#define MYWORD   MYWORD
+#define MYWORD   DWORD64
 #else
 #define MYWORD DWORD
 #endif
