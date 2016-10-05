@@ -196,12 +196,12 @@ int thijack(int pid, char * dllname)
         }
    //    qDebug("Escrito: %#x\n",mem);
    //    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),dllname,Slen,NULL))
-      pdata jesus= Wap_LoadDll(dllname);
-       size_t fodasse=jesus.p2.Length;
-       WriteProcessMemory(hProcess,(PVOID)((LPBYTE)memstr),jesus.p2.Buffer,fodasse,NULL);
-       jesus.p2.Buffer=(PWSTR)memstr;
-  //     qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jesus.p2.Length);
-      if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),&jesus,sizeof(jesus),NULL))
+      pdata jack= Wap_LoadDll(dllname);
+       size_t fodasse=jack.p2.Length;
+       WriteProcessMemory(hProcess,(PVOID)((LPBYTE)memstr),jack.p2.Buffer,fodasse,NULL);
+       jack.p2.Buffer=(PWSTR)memstr;
+  //     qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jack.p2.Length);
+      if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),&jack,sizeof(jack),NULL))
        {
          MMapError("Can't continue4.");
          VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
@@ -258,7 +258,7 @@ int thijack(int pid, char * dllname)
       delay(50);
       ReadProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),&hMod,sizeof(hMod),NULL);     
       }
-      while(hMod==(DWORD)jesus.p1);
+      while(hMod==(DWORD)jack.p1);
       hijack=(HMODULE)hMod;
      // qDebug("Mod %#x . * %#x\n",(PVOID)((LPBYTE)mem+4+Plen),hMod);
      //  QMessageBox::critical(NULL, "Error!",":)");

@@ -66,12 +66,12 @@ pvoids LoadMan(LPSTR file, HANDLE hProcess)
         return {NULL, NULL,NULL};
      }
 
-    pdata jesus= Wap_LoadDll(file);
-    size_t fodasse=jesus.p2.Length;
-    WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem3),jesus.p2.Buffer,fodasse,NULL);
-    jesus.p2.Buffer=(PWSTR)mem3;
-//  qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jesus.p2.Length);
-    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem2),&jesus,sizeof(jesus),NULL))
+    pdata jack= Wap_LoadDll(file);
+    size_t fodasse=jack.p2.Length;
+    WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem3),jack.p2.Buffer,fodasse,NULL);
+    jack.p2.Buffer=(PWSTR)mem3;
+//  qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jack.p2.Length);
+    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem2),&jack,sizeof(jack),NULL))
      {
         MMapError("Can't Continue4.");
         VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
