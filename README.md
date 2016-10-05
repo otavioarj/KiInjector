@@ -1,9 +1,11 @@
 # KiInjector
 Kindly Injector
 
+<p align="center">
 ![alt tag](http://i.imgur.com/a4UjzNK.jpg)
-<br />
 ![alt tag](http://i.imgur.com/GT1mJm4.jpg)
+</p>
+
 
 <br />
 
