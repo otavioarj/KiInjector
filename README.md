@@ -2,8 +2,8 @@
 Kindly Injector
 
 <p align="center">
-![alt tag](http://i.imgur.com/a4UjzNK.jpg)
-![alt tag](http://i.imgur.com/GT1mJm4.jpg)
+ <img src="http://i.imgur.com/a4UjzNK.jpg"/>
+ <img src="http://i.imgur.com/GT1mJm4.jpg"/>
 </p>
 
 
