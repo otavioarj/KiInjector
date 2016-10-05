@@ -3,28 +3,37 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::NonModal</enum>
   </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>250</width>
-    <height>321</height>
+    <width>251</width>
+    <height>352</height>
    </rect>
   </property>
   <property name="focusPolicy">
-   <enum>Qt::NoFocus</enum>
-  </property>
-  <property name="contextMenuPolicy">
-   <enum>Qt::NoContextMenu</enum>
+   <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
-   <string notr="true">SuperNanny v2</string>
+   <string notr="true" extracomment="SuperNanny v3">Ki Injector v3.6</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="a.qrc">
+   <iconset>
     <normaloff>:/a.ico</normaloff>:/a.ico</iconset>
+  </property>
+  <property name="locale">
+   <locale language="English" country="UnitedStates"/>
+  </property>
+  <property name="toolButtonStyle">
+   <enum>Qt::ToolButtonIconOnly</enum>
+  </property>
+  <property name="dockNestingEnabled">
+   <bool>true</bool>
+  </property>
+  <property name="unifiedTitleAndToolBarOnMac">
+   <bool>false</bool>
   </property>
   <widget class="QWidget" name="centralWidget">
    <widget class="QLabel" name="label">
@@ -107,9 +116,12 @@
       <height>22</height>
      </rect>
     </property>
+    <property name="currentIndex">
+     <number>3</number>
+    </property>
     <item>
      <property name="text">
-      <string>CreateRemoteThread</string>
+      <string notr="true">CreateRemoteThread</string>
      </property>
     </item>
     <item>
@@ -120,6 +132,11 @@
     <item>
      <property name="text">
       <string>Manual Map</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Thread Hijack</string>
      </property>
     </item>
    </widget>
@@ -167,9 +184,9 @@
    <widget class="Line" name="line">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>120</y>
-      <width>221</width>
+      <width>241</width>
       <height>20</height>
      </rect>
     </property>
@@ -181,7 +198,7 @@
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>290</y>
+      <y>320</y>
       <width>251</width>
       <height>20</height>
      </rect>
@@ -194,7 +211,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>300</y>
+      <y>330</y>
       <width>191</width>
       <height>20</height>
      </rect>
@@ -239,17 +256,29 @@
    <widget class="QTabWidget" name="tabWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>0</x>
       <y>140</y>
-      <width>241</width>
-      <height>151</height>
+      <width>251</width>
+      <height>181</height>
      </rect>
     </property>
     <property name="styleSheet">
      <string notr="true">background-color: rgb(240, 240, 240);</string>
     </property>
+    <property name="tabShape">
+     <enum>QTabWidget::Triangular</enum>
+    </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
+    </property>
+    <property name="documentMode">
+     <bool>false</bool>
+    </property>
+    <property name="tabsClosable">
+     <bool>false</bool>
+    </property>
+    <property name="tabBarAutoHide">
+     <bool>false</bool>
     </property>
     <widget class="QWidget" name="tab_2">
      <attribute name="title">
@@ -260,8 +289,8 @@
        <rect>
         <x>0</x>
         <y>10</y>
-        <width>231</width>
-        <height>91</height>
+        <width>241</width>
+        <height>121</height>
        </rect>
       </property>
       <property name="cursor" stdset="0">
@@ -278,7 +307,7 @@
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>110</y>
+        <y>130</y>
         <width>31</width>
         <height>16</height>
        </rect>
@@ -287,6 +316,9 @@
        <font>
         <pointsize>7</pointsize>
        </font>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clean OutBox text :)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>Clear</string>
@@ -297,74 +329,17 @@
      <attribute name="title">
       <string>Options</string>
      </attribute>
-     <widget class="QCheckBox" name="checkBox_2">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>10</y>
-        <width>101</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>101</width>
-        <height>17</height>
-       </size>
-      </property>
-      <property name="text">
-       <string>Verbose(OutBox)</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_3">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>30</y>
-        <width>121</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="minimumSize">
-       <size>
-        <width>101</width>
-        <height>17</height>
-       </size>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Reinjects if process changes its PID.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="text">
-       <string>Persistent injection.</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox">
-      <property name="geometry">
-       <rect>
-        <x>10</x>
-        <y>50</y>
-        <width>111</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Auto inject into process&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-      </property>
-      <property name="text">
-       <string>Auto injection.</string>
-      </property>
-     </widget>
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>10</x>
-        <y>70</y>
+        <x>130</x>
+        <y>140</y>
         <width>81</width>
         <height>16</height>
        </rect>
       </property>
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Delay to search process list(milliseconds).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay to search process list(milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>Delay:    </string>
@@ -373,29 +348,549 @@
      <widget class="QLineEdit" name="line1_2">
       <property name="geometry">
        <rect>
-        <x>50</x>
-        <y>70</y>
+        <x>170</x>
+        <y>140</y>
         <width>41</width>
         <height>16</height>
        </rect>
       </property>
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Executable (.exe) name of process.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay to search process list(milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="statusTip">
        <string/>
       </property>
       <property name="text">
-       <string>50</string>
+       <string>80</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>220</x>
+        <y>140</y>
+        <width>21</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;milliseconds&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>ms</string>
+      </property>
+     </widget>
+     <widget class="QTabWidget" name="tabWidget_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>30</y>
+        <width>251</width>
+        <height>101</height>
+       </rect>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="tabPosition">
+       <enum>QTabWidget::South</enum>
+      </property>
+      <property name="tabShape">
+       <enum>QTabWidget::Triangular</enum>
+      </property>
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <property name="elideMode">
+       <enum>Qt::ElideNone</enum>
+      </property>
+      <property name="usesScrollButtons">
+       <bool>true</bool>
+      </property>
+      <property name="documentMode">
+       <bool>true</bool>
+      </property>
+      <property name="tabBarAutoHide">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="tab_3">
+       <attribute name="title">
+        <string>Pre</string>
+       </attribute>
+       <widget class="QCheckBox" name="checkBox_4">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Doesn't use LoadLibrary (+stealth)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Load_stub</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_8">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>40</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;195&quot;&gt;&lt;p&gt;Bypass Ldr_DllNotification (+stealth)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>UnDllNotification</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>0</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;milliseconds&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>ms</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_9">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>81</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay before start injection (milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Pre Injection</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>0</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay before start injection (milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Delay:    </string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="line1_5">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>0</y>
+          <width>41</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay before start injection (milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1200</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_10">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;185&quot;&gt;&lt;p&gt;Uses Thread hijack into Manual Map (+stealth, -stability)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Thread Hijack stub</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_13">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>20</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay before wipe hijack stub (milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Delay:    </string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="line1_6">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>20</y>
+          <width>41</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay before wipe hijack stub (milliseconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1500</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_14">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>20</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;milliseconds&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>ms</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="tab_4">
+       <attribute name="title">
+        <string>Post</string>
+       </attribute>
+       <widget class="QCheckBox" name="checkBox_3">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>20</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="minimumSize">
+         <size>
+          <width>101</width>
+          <height>17</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;
+    &lt;td width=&quot;125&quot;&gt;&lt;p&gt;Reinject if process changes its PID.&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Persistent injection</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_8">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>20</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Times to reinject DLL ( 0 means infinite).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Times:</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_5">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>40</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;
+    &lt;td width=&quot;125&quot;&gt;&lt;p&gt;Zero DLL's header (+stealth, -stability)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Wipe Dll Header</string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="line1_3">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>20</y>
+          <width>41</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Times to reinject DLL ( 0 means infinite).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>1</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_6">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;200&quot;&gt;&lt;p&gt;Wipe Load_stub memory (+stealth, may crash)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Wipe Load_stub</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>0</y>
+          <width>81</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay to wipe Load_stub(seconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Delay:    </string>
+        </property>
+       </widget>
+       <widget class="QLineEdit" name="line1_4">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>170</x>
+          <y>0</y>
+          <width>41</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay to wipe Load_stub(seconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="statusTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>3</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_10">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="geometry">
+         <rect>
+          <x>220</x>
+          <y>0</y>
+          <width>21</width>
+          <height>16</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;seconds&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>s</string>
+        </property>
+       </widget>
+       <widget class="QCheckBox" name="checkBox_7">
+        <property name="geometry">
+         <rect>
+          <x>130</x>
+          <y>40</y>
+          <width>111</width>
+          <height>17</height>
+         </rect>
+        </property>
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;
+    &lt;td width=&quot;125&quot;&gt;&lt;p&gt;Remove Dll from Peb (+stealth)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="text">
+         <string>Hide Dll</string>
+        </property>
+       </widget>
+      </widget>
+     </widget>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>140</y>
+        <width>111</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;170&quot;&gt;&lt;p&gt;Auto inject into process (starts ASAP)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Auto injection</string>
+      </property>
+     </widget>
+     <widget class="QRadioButton" name="radioButton">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>10</y>
+        <width>91</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;200&quot;&gt;&lt;p&gt;Starts from Temp, with a random name (dll and .exe)&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Obfuscation</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_2">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>10</y>
+        <width>111</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>101</width>
+        <height>17</height>
+       </size>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Print more info into OutBox&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="text">
+       <string>Verbose (OutBox)</string>
       </property>
      </widget>
     </widget>
    </widget>
+   <widget class="QComboBox" name="comboBox_2">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>10</y>
+      <width>151</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="maxVisibleItems">
+     <number>1024</number>
+    </property>
+   </widget>
+   <widget class="QToolButton" name="toolButton_2">
+    <property name="geometry">
+     <rect>
+      <x>210</x>
+      <y>10</y>
+      <width>25</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>25</width>
+      <height>19</height>
+     </size>
+    </property>
+    <property name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;List the injectables processes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="text">
+     <string>...</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
- <resources>
-  <include location="a.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

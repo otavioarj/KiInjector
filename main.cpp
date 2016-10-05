@@ -1,10 +1,3 @@
-/*
- * This file is part of KiInjector project. This software may be used and distributed
- * according to the terms of the GNU General Public License version 3, incorporated herein by reference
- * at repository: https://github.com/otavioarj/KiInjector
- =]
-*/
-
 #include "mainwindow.h"
 #include <QApplication>
 

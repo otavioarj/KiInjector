@@ -1,10 +1,3 @@
-/*
- * This file is part of KiInjector project. This software may be used and distributed
- * according to the terms of the GNU General Public License version 3, incorporated herein by reference
- * at repository: https://github.com/otavioarj/KiInjector
- =]
-*/
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -16,6 +9,7 @@
 
 //#include <iostream>
 #include "inject.h"
+
 
 namespace Ui {
 class MainWindow;
@@ -36,7 +30,7 @@ private slots:
     void on_toolButton_clicked();
   //  void showEvent( QShowEvent *event );
     int IsUserAdmin();
-     void errorp(const char * str, bool a);
+     void errorp(const char * str, bool);
      DWORD PrintProcessNameAndID( DWORD processID[],const char * ProcName, int cProcesses);
 
     // void on_toolButton_2_clicked();
@@ -54,14 +48,33 @@ private slots:
     void on_pushButton_2_clicked();
 
 
+
+    void on_radioButton_clicked();
+
+    void on_comboBox_currentIndexChanged(int index);
+
+    void on_checkBox_4_stateChanged(int arg1);
+
+    void on_checkBox_9_toggled(bool checked);
+
+    void on_toolButton_2_clicked();
+
+    void on_comboBox_2_activated(const QString &arg1);
+
+    void on_checkBox_10_toggled(bool checked);
+
+
+    void on_checkBox_3_clicked(bool checked);
+
 private:
     Ui::MainWindow *ui;
     int isInitialized;
     bool verbose;
     bool ainject;
+    bool obs;
     FILE *f;
 
 };
 
-
+void delay( int millisecondsToWait );
 #endif // MAINWINDOW_H
