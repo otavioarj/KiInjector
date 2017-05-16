@@ -12,12 +12,12 @@ _Pload:
 	start: 
 		pop ecx
 		sub ecx,7
-	lea eax,[ecx+26] # offset until end of stub
+	lea eax,[ecx+26] # não é mais 21, aumenta com o 2o lea!
 	push ecx
 	push eax
 	call dword ptr [ecx-4] 	  
 	 pop ecx	
-	mov [ecx+26],eax   # fix return value to external function (my loader)
+     mov [ecx+26],eax   # salva o retorno da função lá (tem 4 bytes se for maior atropela esse stup, oq é de boa, após o return n importa mais)
 	 popfd 
 	 popad 
 	 ret
@@ -40,13 +40,13 @@ _Pload2:
 	start2: 
 		pop ecx
 		sub ecx,7
-	lea eax,[ecx+27] #  offset until end of stub
+	lea eax,[ecx+27] # não é mais 21, aumenta com o 2o lea!
 	push ecx
 	push eax
 	call dword ptr [ecx-4] 	
-  	 pop ebx # stub needs a pop, it isn't used with loadlibrary :)
+     pop ebx # coloquei pra dar um fix, o loadll rola sem isso
 	 pop ecx	
-     mov [ecx+27],eax   # fix return value to external function (my loader)
+     mov [ecx+27],eax   # salva o retorno da função lá (tem 4 bytes se for maior atropela esse stup, oq é de boa, após o return n importa mais)
 	 popfd 
 	 popad 
 	 ret

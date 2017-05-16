@@ -1,4 +1,10 @@
 #include "inject.h"
+#include <stdio.h>
+#include "../ADVobfuscator/ADVobfuscator/MetaString4.h"
+#pragma GCC push_options
+#pragma GCC optimize("O2")
+using namespace andrivet::ADVobfuscator;
+
 //#include <QDebug>
 //#include <QMessageBox>
 
@@ -21,7 +27,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(hFile==INVALID_HANDLE_VALUE)
     {
-        MMapError("[-] Unable to open DLL");
+        MMapError(OBFUSCATED4("[-] Unable to open DLL"));
         return 0;
     }
 
@@ -30,7 +36,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(!buffer)
     {
-        MMapError("[-] Can't allocate Lmemory for DLL ");
+        MMapError(OBFUSCATED4("[-] Can't allocate Lmemory for DLL "));
 
         CloseHandle(hFile);
         return 0;
@@ -40,7 +46,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(!ReadFile(hFile,buffer,FileSize,&read,NULL))
     {
-        MMapError("[-] Unable to read the DLL ");
+        MMapError(OBFUSCATED4("[-] Unable to read the DLL "));
 
         VirtualFree(buffer,0,MEM_RELEASE);
         CloseHandle(hFile);
@@ -49,12 +55,14 @@ int mmap(DWORD ProcessId,char* dll)
     }
 
     CloseHandle(hFile);
+ //   buffer=(HMODULE)LoadLibraryEx(dll,NULL,DONT_RESOLVE_DLL_REFERENCES);
 
     pIDH=(PIMAGE_DOS_HEADER)buffer;
 
+
     if(pIDH->e_magic!=IMAGE_DOS_SIGNATURE)
     {
-        MMapError("[-] Invalid executable image.");
+        MMapError(OBFUSCATED4("[-] Invalid executable image."));
 
         VirtualFree(buffer,0,MEM_RELEASE);
         return 0;
@@ -64,7 +72,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(pINH->Signature!=IMAGE_NT_SIGNATURE)
     {
-        MMapError("[-] Invalid PE header");
+        MMapError(OBFUSCATED4("[-] Invalid PE header"));
 
         VirtualFree(buffer,0,MEM_RELEASE);
         return 0;
@@ -72,7 +80,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(!(pINH->FileHeader.Characteristics & IMAGE_FILE_DLL))
     {
-        MMapError("[-] The image is not DLL.");
+        MMapError(OBFUSCATED4("[-] The image is not DLL."));
 
         VirtualFree(buffer,0,MEM_RELEASE);
         return 0;
@@ -84,7 +92,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(!hProcess)
     {
-        MMapError("[-] Cant open process ");
+        MMapError(OBFUSCATED4("[-] Cant open process "));
 
         VirtualFree(buffer,0,MEM_RELEASE);
         CloseHandle(hProcess);
@@ -96,7 +104,7 @@ int mmap(DWORD ProcessId,char* dll)
 
     if(!image)
     {
-        MMapError("[-] Can't allocate remote Rmemory for DLL");
+        MMapError(OBFUSCATED4("[-] Can't allocate remote Rmemory for DLL"));
 
         VirtualFree(buffer,0,MEM_RELEASE);
         CloseHandle(hProcess);
@@ -105,9 +113,10 @@ int mmap(DWORD ProcessId,char* dll)
     }
 
 
-    if(!WriteProcessMemory(hProcess,image,buffer,pINH->OptionalHeader.SizeOfHeaders,NULL))
+
+    if(!myWriteProcessMemory(hProcess,image,buffer,pINH->OptionalHeader.SizeOfHeaders,NULL))
     {
-        MMapError("[-] Cant copy headers to process");
+        MMapError(OBFUSCATED4("[-] Cant copy headers to process"));
 
         VirtualFreeEx(hProcess,image,0,MEM_RELEASE);
         CloseHandle(hProcess);
@@ -122,7 +131,7 @@ int mmap(DWORD ProcessId,char* dll)
 
 
     for(i=0;i<pINH->FileHeader.NumberOfSections;i++)
-        WriteProcessMemory(hProcess,(PVOID)((LPBYTE)image+pISH[i].VirtualAddress),(PVOID)((LPBYTE)buffer+pISH[i].PointerToRawData),pISH[i].SizeOfRawData,NULL);
+        myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)image+pISH[i].VirtualAddress),(PVOID)((LPBYTE)buffer+pISH[i].PointerToRawData),pISH[i].SizeOfRawData,NULL);
 
 
 
@@ -133,6 +142,8 @@ int mmap(DWORD ProcessId,char* dll)
     ManualInject.ImportDirectory=(PIMAGE_IMPORT_DESCRIPTOR)((LPBYTE)image+pINH->OptionalHeader.DataDirectory[IMAGE_DIRECTORY_ENTRY_IMPORT].VirtualAddress);
     ManualInject.fnLoadLibraryA=LoadLibraryA;
     ManualInject.fnGetProcAddress=GetProcAddress;
+  //  qDebug("%#x\n",image);
+ //   QMessageBox::critical(NULL, "Error!",":)");
 
    // qDebug("End: %#x %#x %#x %#x\n",ManualInject.ImageBase,ManualInject.NtHeaders,ManualInject.BaseRelocation,ManualInject.ImportDirectory);
     if(hijack_stub)
@@ -141,11 +152,21 @@ int mmap(DWORD ProcessId,char* dll)
         obj.in=(void *)LoadDll2;
         obj.fin=(void *)LoadDllEnd;
         param p;
+        char * str2;
         p.data=&ManualInject;
         p.a=sizeof(ManualInject);
-        if(!mytrick(ProcessId, obj, p,false))
+        if(mytrick(ProcessId, obj, p,false)!=1)
         {
-            MMapError("[-] Hijack stub failed :(");
+            auto str=DEF_OBFUSCATED4("[-] Hijack stub failed :(");
+        /*    char *str1;
+            str1=(char *)malloc(size);
+            strncpy(str1,wtn.decrypt(),size);*/
+            int size=str.ssize();
+            str2=(char *) malloc(strlen(MError)+size);
+            sprintf(str2,"%s\n%s",str,MError);
+            free(MError);
+            MMapError(str2);
+            free(str2);
             VirtualFreeEx(hProcess,image,0,MEM_RELEASE);
             CloseHandle(hProcess);
             VirtualFree(buffer,0,MEM_RELEASE);
@@ -155,19 +176,19 @@ int mmap(DWORD ProcessId,char* dll)
     }
     else
     {
-        mem=VirtualAllocEx(hProcess,NULL,1024,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
+        mem=VirtualAllocEx(hProcess,NULL,4096,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
 
         if(!mem)
         {
-            MMapError("[-] Can't allocate memory for the loader code");
+            MMapError(OBFUSCATED4("[-] Can't allocate memory for the loader code"));
             VirtualFreeEx(hProcess,image,0,MEM_RELEASE);
             CloseHandle(hProcess);
             VirtualFree(buffer,0,MEM_RELEASE);
             return 0;
         }
-        if(!WriteProcessMemory(hProcess,mem,&ManualInject,sizeof(ManualInject),NULL))  // Write the loader information to target process
+        if(!myWriteProcessMemory(hProcess,mem,&ManualInject,sizeof(ManualInject),NULL))  // Write the loader information to target process
         {
-            MMapError("[-] Can't write to remote process!");
+            MMapError(OBFUSCATED4("[-] Can't write to remote process!"));
             VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
             VirtualFreeEx(hProcess,image,0,MEM_RELEASE);
             CloseHandle(hProcess);
@@ -175,9 +196,9 @@ int mmap(DWORD ProcessId,char* dll)
             return 0;
         }
 
-        if(!WriteProcessMemory(hProcess,(PVOID)((PMANUAL_INJECT)mem+1),(PVOID)LoadDll2,(MYWORD)LoadDllEnd-(MYWORD)LoadDll2,NULL)) // Write the loader code to target process
+        if(!myWriteProcessMemory(hProcess,(PVOID)((PMANUAL_INJECT)mem+1),(PVOID)LoadDll2,(MYWORD)LoadDllEnd-(MYWORD)LoadDll2,NULL)) // Write the loader code to target process
         {
-            MMapError("[-] Can't write to remote process!");
+            MMapError(OBFUSCATED4("[-] Can't write to remote process!"));
             VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
             VirtualFreeEx(hProcess,image,0,MEM_RELEASE);
             CloseHandle(hProcess);
@@ -188,11 +209,11 @@ int mmap(DWORD ProcessId,char* dll)
     //    qDebug("Addr %#x\n",mem+1);
   //       QMessageBox::critical(NULL, "Error!",":)");
 
-        hThread=CreateRemoteThread(hProcess,NULL,0,(LPTHREAD_START_ROUTINE)((PMANUAL_INJECT)mem+1),mem,0,NULL); // Create a remote thread to execute the loader code
+        hThread= NtCreateThreadEx(hProcess,(PVOID)((PMANUAL_INJECT)mem+1),mem); // Create a remote thread to execute the loader code
 
         if(!hThread)
         {
-            MMapError("[-] Unable to execute loader code ");
+            MMapError(OBFUSCATED4("[-] Unable to execute loader code "));
             VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
             VirtualFreeEx(hProcess,image,0,MEM_RELEASE);
             CloseHandle(hProcess);

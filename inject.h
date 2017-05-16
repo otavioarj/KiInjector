@@ -1,4 +1,3 @@
-
 #ifndef INJ
 #define INJ
 
@@ -11,7 +10,7 @@
 #include <shlwapi.h>
 #include <Ntsecapi.h>
 
-#ifdef _WIN64
+#ifdef __x86_64__
 #define MYWORD   DWORD64
 #else
 #define MYWORD DWORD
@@ -21,9 +20,14 @@
 
 #define THREAD_ACCESS (THREAD_GET_CONTEXT | THREAD_QUERY_INFORMATION |  THREAD_SET_CONTEXT | THREAD_SET_INFORMATION | THREAD_SUSPEND_RESUME )
 
+//DWORD getThreadID(DWORD pid);
 int thijack(int pid, char *dllname);
 
-
+/*typedef struct _UNICODE_STRING { // UNICODE_STRING structure
+         USHORT Length;
+         USHORT MaximumLength;
+         PWSTR  Buffer;
+} UNICODE_STRING;*/
 typedef UNICODE_STRING *PUNICODE_STRING;
 
 typedef VOID (WINAPI *fRtlInitUnicodeString) //RtlInitUnicodeString function prototype
@@ -63,7 +67,7 @@ struct pvoids{
 HWND FindWindowFromProcessId( DWORD dwProcessId );
 
 HMODULE GetRemoteModuleHandle(unsigned long, char *);
-FARPROC GetRemoteProcAddress(unsigned long, char *, char *);
+//FARPROC GetRemoteProcAddress(unsigned long, char *, char *);
 
 DWORD getThreadID(DWORD pid);
 
@@ -82,18 +86,18 @@ struct param
 int mytrick(int pid, stubs obj, param p, bool slub);
 
 
-
 pvoids LoadMan(LPSTR file, HANDLE hProcess);
 
 extern "C" void DC_stubend(void);
 extern "C" void DllCall_stub(HMODULE hMod);
 
-extern "C" void Pload(void);
+extern "C" MYWORD Pload(void);
 extern "C" void Pload_stub(void);
 
-
-extern "C" void Pload2(void);
+#ifndef _WIN64
+extern "C" MYWORD Pload2(void);
 extern "C" void Pload_stub2(void);
+#endif
 
 HMODULE WINAPI LoadDll(pdata *points);
 void LoadDLL_stub();
@@ -113,14 +117,28 @@ typedef HMODULE (WINAPI * tGetModuleHandle)(LPCTSTR);
 typedef SIZE_T (WINAPI * tVirtualQuery)(LPCVOID ,
                                         PMEMORY_BASIC_INFORMATION,SIZE_T dwLength);
 
-void fix_undll(DWORD []);
+void fix_undll( MYWORD []);
 int find_undll(void *addr);
 void find_end();
 
 typedef HMODULE (WINAPI *pLoadLibraryA)(LPCSTR);
 typedef FARPROC (WINAPI *pGetProcAddress)(HMODULE,LPCSTR);
-
 typedef BOOL (WINAPI *PDLL_MAIN)(HMODULE,DWORD,PVOID);
+typedef NTSTATUS (NTAPI *pZwWriteVirtualMemory)(IN HANDLE               ProcessHandle,
+                                                 IN PVOID                BaseAddress,
+                                                 IN LPCVOID                Buffer,
+                                                 IN ULONG                NumberOfBytesToWrite,
+                                                 OUT SIZE_T  *           NumberOfBytesWritten);
+
+/*
+typedef NTSTATUS (*pZwProtectVirtualMemory)(
+ IN HANDLE               ProcessHandle,
+ IN OUT PVOID            *BaseAddress,
+ IN OUT PULONG           NumberOfBytesToProtect,
+ IN ULONG                NewAccessProtection,
+ OUT PULONG              OldAccessProtection );*/
+
+BOOL myWriteProcessMemory(HANDLE  hProcess,LPVOID  lpBaseAddress,LPCVOID lpBuffer, SIZE_T  nSize, SIZE_T  *lpNumberOfBytesWritten);
 
 typedef struct _MANUAL_INJECT
 {
@@ -132,11 +150,15 @@ typedef struct _MANUAL_INJECT
     pGetProcAddress fnGetProcAddress;
 }MANUAL_INJECT,*PMANUAL_INJECT;
 
-DWORD WINAPI LoadDll2(PVOID p);
+MYWORD WINAPI LoadDll2(PVOID p);
 void WINAPI LoadDllEnd();
-int mmap(DWORD ProcessId,char* dll);
+int mmap( DWORD ProcessId,char* dll);
 
 extern bool hijack_stub;
 extern int hijack_stub_delay;
+HANDLE  NtCreateThreadEx(HANDLE hProcess,LPVOID lpBaseAddress,LPVOID lpSpace);
+
+
+//void* getprocaddress(HMODULE module, const char *proc_name);
 
 #endif

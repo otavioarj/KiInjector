@@ -4,12 +4,13 @@
 #include <QMainWindow>
 #include <QCoreApplication>
 #include <QTime>
-//#include "mythread.h"
-
-
-//#include <iostream>
 #include "inject.h"
+#include "../ADVobfuscator/ADVobfuscator/MetaString4.h"
 
+#pragma GCC push_options
+#pragma GCC optimize("O2")
+
+extern MYWORD test,test2;
 
 namespace Ui {
 class MainWindow;
@@ -31,7 +32,7 @@ private slots:
   //  void showEvent( QShowEvent *event );
     int IsUserAdmin();
      void errorp(const char * str, bool);
-     DWORD PrintProcessNameAndID( DWORD processID[],const char * ProcName, int cProcesses);
+     DWORD QtEventId( DWORD processID[],const char * ProcName, int cProcesses); // PrintProcessNameAndID
 
     // void on_toolButton_2_clicked();
 
@@ -41,9 +42,9 @@ private slots:
     void on_commandLinkButton_clicked();
 
     void on_pushButton_clicked();
-    DWORD GetTargetThreadIDFromProcName(const char * ProcName);
+    DWORD QtThreadId(const char * ProcName); //GetTargetThreadIDFromProcName
     int Inject(int pID, const char * DLL_NAME);
-    HANDLE NtCreateThreadEx(HANDLE hProcess,LPVOID lpBaseAddress,LPVOID lpSpace);
+    //HANDLE NtCreateThreadEx(HANDLE hProcess,LPVOID lpBaseAddress,LPVOID lpSpace);
     void closeEvent (QCloseEvent *event);
     void on_pushButton_2_clicked();
 
@@ -66,6 +67,16 @@ private slots:
 
     void on_checkBox_3_clicked(bool checked);
 
+    void on_checkBox_5_clicked(bool checked);
+
+    void on_checkBox_6_clicked(bool checked);
+
+    void on_comboBox_2_activated(int index);
+
+
+
+    void on_comboBox_2_highlighted(int index);
+
 private:
     Ui::MainWindow *ui;
     int isInitialized;
@@ -77,4 +88,5 @@ private:
 };
 
 void delay( int millisecondsToWait );
+
 #endif // MAINWINDOW_H

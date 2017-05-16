@@ -17,14 +17,14 @@
    <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
-   <string notr="true" extracomment="SuperNanny v3">Ki Injector v3.6</string>
+   <string notr="true" extracomment="SuperNanny 4.0">SuperNanny 4.0</string>
   </property>
   <property name="windowIcon">
    <iconset>
     <normaloff>:/a.ico</normaloff>:/a.ico</iconset>
   </property>
   <property name="locale">
-   <locale language="English" country="UnitedStates"/>
+   <locale language="Russian" country="Russia"/>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
@@ -117,7 +117,7 @@
      </rect>
     </property>
     <property name="currentIndex">
-     <number>3</number>
+     <number>1</number>
     </property>
     <item>
      <property name="text">
@@ -591,7 +591,7 @@
          <string/>
         </property>
         <property name="text">
-         <string>1500</string>
+         <string>95</string>
         </property>
        </widget>
        <widget class="QLabel" name="label_14">
@@ -622,7 +622,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>20</y>
+          <y>40</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -648,7 +648,7 @@
         <property name="geometry">
          <rect>
           <x>130</x>
-          <y>20</y>
+          <y>40</y>
           <width>81</width>
           <height>16</height>
          </rect>
@@ -664,7 +664,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>40</y>
+          <y>0</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -684,7 +684,7 @@
         <property name="geometry">
          <rect>
           <x>170</x>
-          <y>20</y>
+          <y>40</y>
           <width>41</width>
           <height>16</height>
          </rect>
@@ -706,7 +706,7 @@
         <property name="geometry">
          <rect>
           <x>10</x>
-          <y>0</y>
+          <y>20</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -725,16 +725,16 @@
         <property name="geometry">
          <rect>
           <x>130</x>
-          <y>0</y>
+          <y>20</y>
           <width>81</width>
           <height>16</height>
          </rect>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay to wipe Load_stub(seconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;195&quot;&gt;&lt;p&gt;Delay to wipe Load_stub and/or Header (seconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
-         <string>Delay:    </string>
+         <string>WDelay:    </string>
         </property>
        </widget>
        <widget class="QLineEdit" name="line1_4">
@@ -744,13 +744,13 @@
         <property name="geometry">
          <rect>
           <x>170</x>
-          <y>0</y>
+          <y>20</y>
           <width>41</width>
           <height>16</height>
          </rect>
         </property>
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;125&quot;&gt;&lt;p&gt;Delay to wipe Load_stub(seconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;tr&gt;&lt;td width=&quot;195&quot;&gt;&lt;p&gt;Delay to wipe Load_stub and/or Header (seconds).&lt;/p&gt;&lt;\td&gt;&lt;\tr&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="statusTip">
          <string/>
@@ -766,7 +766,7 @@
         <property name="geometry">
          <rect>
           <x>220</x>
-          <y>0</y>
+          <y>20</y>
           <width>21</width>
           <height>16</height>
          </rect>
@@ -782,7 +782,7 @@
         <property name="geometry">
          <rect>
           <x>130</x>
-          <y>40</y>
+          <y>0</y>
           <width>111</width>
           <height>17</height>
          </rect>
@@ -861,6 +861,9 @@
       <width>151</width>
       <height>22</height>
      </rect>
+    </property>
+    <property name="currentIndex">
+     <number>-1</number>
     </property>
     <property name="maxVisibleItems">
      <number>1024</number>

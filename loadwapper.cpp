@@ -1,17 +1,20 @@
 #include "inject.h"
 #include "mainwindow.h"
+#include "antis.h"
+
 
 //#include <QDebug>
 //#include <QMessageBox>
 
-pdata Wap_LoadDll(LPSTR lpFileName){
+using namespace andrivet::ADVobfuscator;
 
+pdata Wap_LoadDll(LPSTR lpFileName){
 HMODULE hntdll=NULL;
 pdata points;
 fRtlInitUnicodeString _RtlInitUnicodeString=NULL;
-hntdll = GetModuleHandleA("ntdll.dll");
-points.p1 = (fLdrLoadDll) GetProcAddress ( hntdll, "LdrLoadDll");
-_RtlInitUnicodeString = (fRtlInitUnicodeString) GetProcAddress ( hntdll, "RtlInitUnicodeString");
+hntdll = GetModuleHandleA(OBFUSCATED4("ntdll.dll"));
+points.p1 = (fLdrLoadDll) GetProcAddress(hntdll, OBFUSCATED4("LdrLoadDll"));
+_RtlInitUnicodeString = (fRtlInitUnicodeString) GetProcAddress ( hntdll, OBFUSCATED4("RtlInitUnicodeString"));
 
 int StrLen = lstrlenA(lpFileName);
 BSTR WideStr = SysAllocStringLen(NULL, StrLen);
@@ -35,45 +38,41 @@ pvoids LoadMan(LPSTR file, HANDLE hProcess)
     mem2=VirtualAllocEx(hProcess,NULL,124,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
     mem3=VirtualAllocEx(hProcess,NULL,1024,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
 
-    if(!((DWORD)mem & (DWORD)mem2 & (DWORD)mem3))
+    if(!(( MYWORD)mem & ( MYWORD)mem2 & ( MYWORD)mem3))
     {
 
-        MMapError("Can't alloc memory  slub_inject!");
+        MMapError(OBFUSCATED4("[-] Can't alloc memory  slub_inject!"));
         VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
         VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
         VirtualFreeEx(hProcess,mem3,0,MEM_RELEASE);
         return {NULL, NULL,NULL};
     }
 
-    asm volatile( "mov %%fs:(0x30),%%eax;"
-                  "mov 0x68(%%eax),%%eax;"
-                  "mov %%eax,%0;"
-                  "add $0x57,%0;"
-                  :"=r" (Nt)
-                  :
-                  :);
-    if(Nt == 0xc7)
-      Llen= (DWORD)LoadDll - (DWORD)LoadDLL_stub;
+     Nt=NtStatus();
+   //  qDebug("D: %d",Nt);
+    if(Nt%2)
+      Llen= ( MYWORD)LoadDll - ( MYWORD)LoadDLL_stub;
     else
-      Llen= (DWORD)LoadDLL_stub - (DWORD)LoadDll;
+      Llen= ( MYWORD)LoadDLL_stub - ( MYWORD)LoadDll;
+   //  qDebug("L: %d",Llen);
 
-    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem),(LPCVOID) LoadDll,Llen,NULL))
+    if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem),(LPCVOID) LoadDll,Llen,NULL))
      {
-        MMapError("Can't Continue1.");
+        MMapError(OBFUSCATED4("[-] Can't Continue1."));
         VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
         VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
         VirtualFreeEx(hProcess,mem3,0,MEM_RELEASE);
         return {NULL, NULL,NULL};
      }
 
-    pdata jack= Wap_LoadDll(file);
-    size_t fodasse=jack.p2.Length;
-    WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem3),jack.p2.Buffer,fodasse,NULL);
-    jack.p2.Buffer=(PWSTR)mem3;
-//  qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jack.p2.Length);
-    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem2),&jack,sizeof(jack),NULL))
+    pdata jswap= Wap_LoadDll(file);
+    size_t swap_size=jswap.p2.Length;
+    myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem3),jswap.p2.Buffer,swap_size,NULL);
+    jswap.p2.Buffer=(PWSTR)mem3;
+//  qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jswap.p2.Length);
+    if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem2),&jswap,sizeof(jswap),NULL))
      {
-        MMapError("Can't Continue4.");
+        MMapError(OBFUSCATED4("[-] Can't Continue4."));
         VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
         VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
         VirtualFreeEx(hProcess,mem3,0,MEM_RELEASE);
@@ -98,7 +97,7 @@ int mytrick(int pid, stubs obj, param p, bool slub)
     PVOID myLoad=NULL,myStub=NULL,mem=NULL,memwipe=NULL,mem2=NULL;
     TOKEN_PRIVILEGES tp;
     CONTEXT ctx;
-    unsigned long int NtGlobalFlags=0;
+    //unsigned long int NtGlobalFlags=0;
 
     tp.PrivilegeCount=1;
     tp.Privileges[0].Attributes=SE_PRIVILEGE_ENABLED;
@@ -106,7 +105,7 @@ int mytrick(int pid, stubs obj, param p, bool slub)
     tp.Privileges[0].Luid.HighPart=0;
     if(!OpenProcessToken((HANDLE)-1,TOKEN_ADJUST_PRIVILEGES|TOKEN_QUERY,&hToken))
     {
-        MMapError("Not enought permission!");
+        MMapError(OBFUSCATED4("[-] Not enought permission!"));
         return false;
     }
     AdjustTokenPrivileges(hToken,FALSE,&tp,0,NULL,0);
@@ -116,7 +115,7 @@ int mytrick(int pid, stubs obj, param p, bool slub)
 
     if(threadID == (DWORD)0)
      {
-        MMapError("Thread not found");
+        MMapError(OBFUSCATED4("[-] Thread not found"));
         return false;
       }
 
@@ -124,36 +123,29 @@ int mytrick(int pid, stubs obj, param p, bool slub)
 
        if(!hThread)
        {
-           MMapError("Can't open thread handle");
+           MMapError(OBFUSCATED4("[-] Can't open thread handle"));
            return false;
        }
 
-       asm volatile( "mov %%fs:(0x30),%%eax;"
-                     "mov 0x68(%%eax),%%eax;"
-                     "mov %%eax,%0;"
-                     "add $0x38,%0;"
-                     :"=r" (NtGlobalFlags)
-                     :
-                     :);
+
 
        ctx.ContextFlags=CONTEXT_FULL;
        SuspendThread(hThread);
 
        if(!GetThreadContext(hThread,&ctx)) // Get the thread context
        {
-           MMapError("Can't get thread context");
+           MMapError(OBFUSCATED4("[-] Can't get thread context"));
            ResumeThread(hThread);
            CloseHandle(hThread);
            return false;
        }
 
 
-
       hProcess=OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,FALSE,processID);
       if(hProcess==NULL)
       {
 
-          MMapError("Can't open process!");
+          MMapError(OBFUSCATED4("[-] Can't open process!"));
           ResumeThread(hThread);
           CloseHandle(hThread);
           CloseHandle(hProcess);
@@ -164,10 +156,10 @@ int mytrick(int pid, stubs obj, param p, bool slub)
       mem=VirtualAllocEx(hProcess,NULL,124,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
       mem2=VirtualAllocEx(hProcess,NULL,1024,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
 
-       if(!((DWORD)mem & (DWORD)mem2 ))
+       if(!(( MYWORD)mem & ( MYWORD)mem2 ))
        {
 
-           MMapError("Can't alloc memory for inject!");
+           MMapError(OBFUSCATED4("[-] Can't alloc memory for inject!"));
            VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
            ResumeThread(hThread);
@@ -176,41 +168,44 @@ int mytrick(int pid, stubs obj, param p, bool slub)
            return false;
        }
       // qDebug( "Using Thread ID %lu\n", threadID);
-       if(NtGlobalFlags == 0xa8)
+       if(NtStatus()%2)
         {
-           Plen=(DWORD)Pload - (DWORD)Pload_stub;
+           Plen=( MYWORD)Pload - ( MYWORD)Pload_stub;
            myLoad=(LPVOID)LoadLibraryW;
-           mem=(void *)((DWORD)mem2 + NtGlobalFlags);
-          // mem=mem2 + NtGlobalFlags;
+           mem=(void *)(( MYWORD)mem2 + (MYWORD)myLoad);
+
         }
+#ifndef _WIN64
        else if(slub)
        {
-         Plen=(DWORD)Pload_stub2 - (DWORD)Pload2;
+         Plen=( MYWORD)Pload_stub2 - ( MYWORD)Pload2;
          myStub=(LPVOID)Pload2;
          myLoad=(LPVOID)mem2;
        }
+#endif
        else
        {
-          Plen=(DWORD)Pload_stub - (DWORD)Pload;
+          Plen=( MYWORD)Pload_stub - ( MYWORD)Pload;
            myStub=(LPVOID)Pload;
            myLoad=(LPVOID)mem2;
        }
 
-       Llen= (DWORD) obj.fin - (DWORD) obj.in;
+       Llen= ( MYWORD) obj.fin - ( MYWORD) obj.in;
+     //  myLoad=(LPVOID)mem2;
+       //Slen= strlen(dllname);
 
-
-       if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)myLoad),obj.in,Llen,NULL))
+       if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)myLoad),obj.in,Llen,NULL))
         {
-           MMapError("Can't Continue1.");
+           MMapError(OBFUSCATED4("[-] Can't Continue1."));
            VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
            ResumeThread(hThread);
            return false;
         }
 
-       if(!WriteProcessMemory(hProcess,mem,&myLoad,sizeof(PVOID),NULL))
+       if(!myWriteProcessMemory(hProcess,mem,&myLoad,sizeof(PVOID),NULL))
         {
-          MMapError("Can't Continue2.");
+          MMapError(OBFUSCATED4("[-] Can't Continue2."));
           VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
           VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
           ResumeThread(hThread);
@@ -219,9 +214,9 @@ int mytrick(int pid, stubs obj, param p, bool slub)
           return false;
         }
 // EM 64 SÃO 8 BYTES
-        if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4),(LPCVOID) myStub,Plen,NULL))
+        if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+(sizeof(MYWORD))),(LPCVOID) myStub,Plen,NULL))
         {
-          MMapError("Can't Continue3.");
+          MMapError(OBFUSCATED4("[-] Can't Continue3."));
           VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
           VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
           ResumeThread(hThread);
@@ -229,13 +224,13 @@ int mytrick(int pid, stubs obj, param p, bool slub)
           CloseHandle(hProcess);
           return false;
         }
-   //    qDebug("Escrito: %#x\n",mem);
-   //    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),dllname,Slen,NULL))
+     //  qDebug("Escrito: %#x\n",mem);
+   //    if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),dllname,Slen,NULL))
 
-    //  qDebug("Addr: %#x AddrData: %#x Tam: %d\n",&p.data,p.data,p.a);
-      if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),p.data,p.a,NULL))
+      //qDebug("Addr: %#x AddrData: %#x Tam: %d\n",&p.data,p.data,p.a);
+      if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+(sizeof(MYWORD))+Plen),p.data,p.a,NULL))
        {
-         MMapError("Can't Continue4.");
+         MMapError(OBFUSCATED4("[-] Can't Continue4."));
          VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
          VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
          ResumeThread(hThread);
@@ -246,20 +241,28 @@ int mytrick(int pid, stubs obj, param p, bool slub)
 
   //     qDebug("Current eip value: %#x\n",ctx.Eip);
  //      qDebug("Current esp value: %#x\n",ctx.Esp);
-       ctx.Esp-=0x4; // Decrement esp to simulate a push instruction. Without this the target process will crash when the shellcode returns!
+#ifdef _WIN64    // Decrement esp to simulate a push instruction. Without this the target process will crash when the shellcode returns!
+       ctx.Rsp-=0x8;
+       myWriteProcessMemory(hProcess,(PVOID)ctx.Rsp,&ctx.Rip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
+       ctx.Rip=( MYWORD)((LPBYTE)mem+8);
+       //qDebug("Swap rip value: %#x\n",ctx.Rip);
 
-       //qDebug("Swap esp value: %#x\n",ctx.Esp);
-       WriteProcessMemory(hProcess,(PVOID)ctx.Esp,&ctx.Eip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
+#else
+       ctx.Esp-=0x4;
+       myWriteProcessMemory(hProcess,(PVOID)ctx.Esp,&ctx.Eip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
+       ctx.Eip=( MYWORD)((LPBYTE)mem+4); // Set eip to the injected shellcode
+       //qDebug("Swap eip value: %#x\n",ctx.Eip);
 
-       ctx.Eip=(DWORD)((LPBYTE)mem+4); // Set eip to the injected shellcode
-    //   qDebug("Swap eip value: %#x\n",ctx.Eip);
+#endif
+
+
 
 
 
        if(!SetThreadContext(hThread,&ctx)) // Hijack the thread
        {
 
-           MMapError("Can't Continue5.");
+           MMapError(OBFUSCATED4("[-] Can't Continue5."));
            VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
            ResumeThread(hThread);
@@ -270,33 +273,46 @@ int mytrick(int pid, stubs obj, param p, bool slub)
 
       // QMessageBox::critical(NULL, "Error!",":)");
        ResumeThread(hThread); // Resume the thread to allow the thread execute the shellcode
-       CloseHandle(hThread);
+       CloseHandle(hThread);     
        HWND hWnd=NULL;      
        hWnd=FindWindowFromProcessId(processID);
        if(hWnd==NULL)
-         MMapError("Can't display process windows.");
+         MMapError(OBFUSCATED4("[-] Can't display process windows."));
        else
        {
        ShowWindow(hWnd,SW_SHOWMAXIMIZED);
        ShowWindow(hWnd, SW_RESTORE);
        }
-   //   HMODULE hMod;
+   //   HMODULE hMod;     
       memwipe=malloc(1024);
       memset(memwipe,0x0,1024);
-      DWORD hMod=0;
+       MYWORD hMod=0,cnt=0;
+       MYWORD * swap=( MYWORD *)p.data;
       do{      
-      ReadProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),&hMod,sizeof(hMod),NULL);
+      ReadProcessMemory(hProcess,(PVOID)((LPBYTE)mem+(sizeof(MYWORD))+Plen),&hMod,sizeof(hMod),NULL);
       delay(50);
+      cnt++;
+      //qDebug("D: %#x D2 %#x D3 %#x H:%#x\n",(DWORD)p.data,swap,*swap,hMod);
       }
-      while(hMod==(DWORD)p.data);     
-   //   qDebug("Mod %#x . * %#x\n",(PVOID)((LPBYTE)mem+4+Plen),hMod);
+      while(hMod==( MYWORD)*swap && cnt<60);
+    //  QMessageBox::critical(NULL, "Error!",":(");
+      if (hMod==( MYWORD)*swap)
+      {
+          MMapError(OBFUSCATED4("[-] Stub timed out! "));
+          VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
+          VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
+          CloseHandle(hProcess);
+          free(memwipe);
+          return 2;
+      }
+
       if(hijack_stub)
       delay(hijack_stub_delay);
       else
-       delay(350);
+      delay(50);
       hijack=(HMODULE)hMod;
-      WriteProcessMemory(hProcess,mem,memwipe,124,NULL);
-      WriteProcessMemory(hProcess,mem2,memwipe,1024,NULL);
+      myWriteProcessMemory(hProcess,mem,memwipe,124,NULL);
+      myWriteProcessMemory(hProcess,mem2,memwipe,1024,NULL);
       VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
       VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
       CloseHandle(hProcess);

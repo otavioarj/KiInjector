@@ -4,6 +4,25 @@
 
 HMODULE WINAPI LoadDll(pdata *points){
 	
+ /*   typedef struct _UNICODE_STRING { // UNICODE_STRING structure
+             USHORT Length;
+             USHORT MaximumLength;
+             PWSTR  Buffer;
+    } UNICODE_STRING;
+    typedef UNICODE_STRING *PUNICODE_STRING;
+
+
+    typedef long (WINAPI *fLdrLoadDll) //LdrLoadDll function prototype
+        (
+             IN PWCHAR PathToFile OPTIONAL,
+             IN ULONG Flags OPTIONAL,
+             IN PUNICODE_STRING ModuleFileName,
+             OUT PHANDLE ModuleHandle
+        );*/
+
+
+
+
     fLdrLoadDll _LdrLoadDll=(fLdrLoadDll)points->p1;
     UNICODE_STRING str;
     str= points->p2;
@@ -19,7 +38,7 @@ void LoadDLL_stub()
 }
 
 
-DWORD WINAPI LoadDll2(PVOID p)
+MYWORD WINAPI LoadDll2(PVOID p)
 {
     PMANUAL_INJECT ManualInject;
 
@@ -34,12 +53,13 @@ DWORD WINAPI LoadDll2(PVOID p)
     PIMAGE_IMPORT_BY_NAME pIBN;
     PIMAGE_THUNK_DATA FirstThunk,OrigFirstThunk;
 
+
     PDLL_MAIN EntryPoint;
 
-    ManualInject=(PMANUAL_INJECT)p;
+    ManualInject=(PMANUAL_INJECT)p;   
 
     pIBR=ManualInject->BaseRelocation;
-    delta=(MYWORD)((MYWORD)ManualInject->ImageBase - ManualInject->NtHeaders->OptionalHeader.ImageBase); // Calculate the delta
+    delta=(MYWORD)ManualInject->ImageBase - (MYWORD)ManualInject->NtHeaders->OptionalHeader.ImageBase;// Calculate the delta
 
     // Relocate the image
 
@@ -66,7 +86,8 @@ DWORD WINAPI LoadDll2(PVOID p)
     pIID=ManualInject->ImportDirectory;
 
     // Resolve DLL imports
-
+    i=0;
+    i--;
     while(pIID->Characteristics)
     {
         OrigFirstThunk=(PIMAGE_THUNK_DATA)((LPBYTE)ManualInject->ImageBase+pIID->OriginalFirstThunk);
@@ -85,7 +106,7 @@ DWORD WINAPI LoadDll2(PVOID p)
             {
                 // Import by ordinal
 
-                Function=(MYWORD)ManualInject->fnGetProcAddress(hModule,(LPCSTR)(OrigFirstThunk->u1.Ordinal & 0xFFFF));
+                Function=(MYWORD)ManualInject->fnGetProcAddress(hModule,(LPCSTR)(OrigFirstThunk->u1.Ordinal & i)); // i era 0xffff antes!
 
                 if(!Function)
                 {
@@ -117,12 +138,27 @@ DWORD WINAPI LoadDll2(PVOID p)
         pIID++;
     }
 
+ // TLS :)
+    if(ManualInject->NtHeaders->OptionalHeader.NumberOfRvaAndSizes>9)
+    {
+        PIMAGE_TLS_DIRECTORY tls;
+        PIMAGE_TLS_CALLBACK* callback;
+        tls = (PIMAGE_TLS_DIRECTORY) ((MYWORD)ManualInject->ImageBase + ManualInject->NtHeaders->OptionalHeader.DataDirectory[9].VirtualAddress);
+        callback = (PIMAGE_TLS_CALLBACK *) tls->AddressOfCallBacks;
+        if (callback)
+         while (*callback)
+           {
+            (*callback)((LPVOID) ManualInject->ImageBase, DLL_PROCESS_ATTACH, NULL);
+            callback++;
+          }
+    }
+    //OptionalHeader.NumberOfRvaAndSizes
     if(ManualInject->NtHeaders->OptionalHeader.AddressOfEntryPoint)
     {
         EntryPoint=(PDLL_MAIN)((LPBYTE)ManualInject->ImageBase+ManualInject->NtHeaders->OptionalHeader.AddressOfEntryPoint);
         //asm volatile ("mov %esp,%ebp");
-        EntryPoint((HMODULE)ManualInject->ImageBase,DLL_PROCESS_ATTACH,NULL); // Call the entry point
-        return (DWORD) ManualInject->ImageBase;
+       return EntryPoint((HMODULE)ManualInject->ImageBase,DLL_PROCESS_ATTACH,NULL); // Call the entry point
+       // return (DWORD) ManualInject->ImageBase;
     }
 
     return 0;

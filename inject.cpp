@@ -2,7 +2,9 @@
 
 #include "inject.h"
 #include "mainwindow.h"
-
+#include "antis.h"
+//#include <QDebug>
+#include <QMessageBox>
 
 char * MError= NULL;
 HMODULE hijack = NULL;
@@ -13,9 +15,9 @@ int hijack_stub_delay=0;
 
 
 
-DWORD getThreadID(DWORD pid)
+ DWORD getThreadID( unsigned long pid)
 {
-
+   // puts("Getting Thread ID"));
     HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPTHREAD, 0);
     if(h != INVALID_HANDLE_VALUE)
     {
@@ -46,22 +48,26 @@ DWORD getThreadID(DWORD pid)
         }
     }
     CloseHandle(h);
-    return (DWORD)0;
+    return ( DWORD)0;
 }
 
 
 
 
+// http://www.rohitab.com/discuss/topic/40579-dll-injection-via-thread-hijacking/
+// http://stackoverflow.com/questions/8374449/equivalent-for-gccs-naked-attribute/8375416#8375416
+// LoadDLL na mão loadll.cpp
 
 int thijack(int pid, char * dllname)
 {
-    DWORD processID = (DWORD)pid;
+     DWORD processID = ( DWORD)pid;
     HANDLE hProcess,hThread,hToken;
-    DWORD Plen,Llen;
+     DWORD Plen,Llen;
     PVOID LoadLibraryA_Addr,mem,memwipe,mem2, memstr;
     TOKEN_PRIVILEGES tp;
     CONTEXT ctx;
     unsigned long int NtGlobalFlags=0;
+    using namespace andrivet::ADVobfuscator;
 
     tp.PrivilegeCount=1;
     tp.Privileges[0].Attributes=SE_PRIVILEGE_ENABLED;
@@ -69,17 +75,17 @@ int thijack(int pid, char * dllname)
     tp.Privileges[0].Luid.HighPart=0;
     if(!OpenProcessToken((HANDLE)-1,TOKEN_ADJUST_PRIVILEGES|TOKEN_QUERY,&hToken))
     {
-        MMapError("Not enought permission!");
+        MMapError(OBFUSCATED4("[-] Not enought permission!"));
         return false;
     }
     AdjustTokenPrivileges(hToken,FALSE,&tp,0,NULL,0);
     CloseHandle(hToken);
 
-    DWORD threadID = getThreadID(processID);
+     DWORD threadID = getThreadID(processID);
 
-    if(threadID == (DWORD)0)
+    if(threadID == ( DWORD)0)
      {
-        MMapError("Thread not found");
+        MMapError(OBFUSCATED4("[-] Thread not found"));
         return false;
       }
 
@@ -87,36 +93,36 @@ int thijack(int pid, char * dllname)
 
        if(!hThread)
        {
-           MMapError("Can't open thread handle");
+           MMapError(OBFUSCATED4("[-] Can't open thread handle"));
            return false;
        }
 
-       asm volatile( "mov %%fs:(0x30),%%eax;"
-                     "mov 0x68(%%eax),%%eax;"
-                     "mov %%eax,%0;"
-                     "add $0x38,%0;"
-                     :"=r" (NtGlobalFlags)
-                     :
-                     :);
+//       asm volatile( "mov %%fs:(0x30),%%eax;"
+//                     "mov 0x68(%%eax),%%eax;"
+//                     "mov %%eax,%0;"
+//                     "add $0x38,%0;"
+//                     :"=r" (NtGlobalFlags)
+//                     :
+//                     :);
 
        ctx.ContextFlags=CONTEXT_FULL;
        SuspendThread(hThread);
 
        if(!GetThreadContext(hThread,&ctx)) // Get the thread context
        {
-           MMapError("Can't get thread context");
+           MMapError(OBFUSCATED4("[-] Can't get thread context"));
            ResumeThread(hThread);
            CloseHandle(hThread);
            return false;
        }
 
 
-    //   printf("\nAllocating memory in target process.\n");
+    //   printf("\nAllocating memory in target process.\n"));
       hProcess=OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,FALSE,processID);
       if(hProcess==NULL)
       {
 
-          MMapError("Can't open process!");
+          MMapError(OBFUSCATED4("[-] Can't open process!"));
           ResumeThread(hThread);
           CloseHandle(hThread);
           CloseHandle(hProcess);
@@ -128,10 +134,10 @@ int thijack(int pid, char * dllname)
       mem2=VirtualAllocEx(hProcess,NULL,124,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
       memstr=VirtualAllocEx(hProcess,NULL,1024,MEM_COMMIT|MEM_RESERVE,PAGE_EXECUTE_READWRITE);
 
-       if(!((DWORD)mem & (DWORD)mem2 & (DWORD)memstr))
+       if(!(( MYWORD)mem & ( MYWORD)mem2 & ( MYWORD)memstr))
        {
 
-           MMapError("Can't alloc memory for inject!");
+           MMapError(OBFUSCATED4("[-] Can't alloc memory for inject!"));
            VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);         
            VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -141,25 +147,25 @@ int thijack(int pid, char * dllname)
            return false;
        }
       // qDebug( "Using Thread ID %lu\n", threadID);
-       if(NtGlobalFlags == 0xa8)
+       if(CheckTh()%2)
         {
-           Plen=(DWORD)Pload - (DWORD)Pload_stub;
+           Plen=( MYWORD)Pload - ( MYWORD)Pload_stub;
            LoadLibraryA_Addr=(LPVOID)LoadLibraryW;
-           mem=(void *)((DWORD)mem2 + NtGlobalFlags);
+           mem=(void *)(( MYWORD)mem2 + NtGlobalFlags);
         }
        else
        {
-         Plen=(DWORD)Pload_stub - (DWORD)Pload;
+         Plen=( MYWORD)Pload_stub - ( MYWORD)Pload;
          LoadLibraryA_Addr=(LPVOID)LoadLibraryA;
        }
 
-       Llen= (DWORD)LoadDLL_stub - (DWORD)LoadDll;
+       Llen= ( MYWORD)LoadDLL_stub - ( MYWORD)LoadDll;
        LoadLibraryA_Addr=(LPVOID)mem2;
        //Slen= strlen(dllname);
 
-       if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem2),(LPCVOID) LoadDll,Llen,NULL))
+       if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem2),(LPCVOID) LoadDll,Llen,NULL))
         {
-           MMapError("Can't continue1.");
+           MMapError(OBFUSCATED4("[-] Can't continue1."));
            VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -169,11 +175,11 @@ int thijack(int pid, char * dllname)
 
    //   qDebug("GetModHand: %#x\n Addr: %#x",GetModuleHandleA,  GetProcAddress);
 
-      // printf("\nWriting the shellcode, LoadLibraryA address and DLL path into target process.\n");
+      // printf("\nWriting the shellcode, LoadLibraryA address and DLL path into target process.\n"));
 
-       if(!WriteProcessMemory(hProcess,mem,&LoadLibraryA_Addr,sizeof(PVOID),NULL))
+       if(!myWriteProcessMemory(hProcess,mem,&LoadLibraryA_Addr,sizeof(PVOID),NULL))
         {
-          MMapError("Can't continue2.");
+          MMapError(OBFUSCATED4("[-] Can't continue2."));
           VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
           VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
           VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -183,9 +189,9 @@ int thijack(int pid, char * dllname)
           return false;
         }
 
-        if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4),(LPCVOID)Pload,Plen,NULL))
+        if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+(sizeof(MYWORD))),(LPCVOID)Pload,Plen,NULL))
         {
-          MMapError("Can't continue3.");
+          MMapError(OBFUSCATED4("[-] Can't continue3."));
           VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
           VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
           VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -194,16 +200,16 @@ int thijack(int pid, char * dllname)
           CloseHandle(hProcess);
           return false;
         }
-   //    qDebug("Escrito: %#x\n",mem);
-   //    if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),dllname,Slen,NULL))
-      pdata jack= Wap_LoadDll(dllname);
-       size_t fodasse=jack.p2.Length;
-       WriteProcessMemory(hProcess,(PVOID)((LPBYTE)memstr),jack.p2.Buffer,fodasse,NULL);
-       jack.p2.Buffer=(PWSTR)memstr;
-  //     qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jack.p2.Length);
-      if(!WriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),&jack,sizeof(jack),NULL))
+     //  qDebug("Escrito: %#x\n",mem);
+   //    if(!(hProcess,(PVOID)((LPBYTE)mem+4+Plen),dllname,Slen,NULL))
+      pdata jswap= Wap_LoadDll(dllname);
+       size_t swap_size=jswap.p2.Length;
+       myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)memstr),jswap.p2.Buffer,swap_size,NULL);
+       jswap.p2.Buffer=(PWSTR)memstr;
+    //  qDebug("WC.Buffer: %#x J.Tam: %d\n",memstr, jswap.p2.Length);
+      if(!myWriteProcessMemory(hProcess,(PVOID)((LPBYTE)mem+(sizeof(MYWORD))+Plen),&jswap,sizeof(jswap),NULL))
        {
-         MMapError("Can't continue4.");
+         MMapError(OBFUSCATED4("[-] Can't continue4."));
          VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
          VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
          VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -215,20 +221,28 @@ int thijack(int pid, char * dllname)
 
   //     qDebug("Current eip value: %#x\n",ctx.Eip);
  //      qDebug("Current esp value: %#x\n",ctx.Esp);
-       ctx.Esp-=0x4; // Decrement esp to simulate a push instruction. Without this the target process will crash when the shellcode returns!
+#ifdef _WIN64    // Decrement esp to simulate a push instruction. Without this the target process will crash when the shellcode returns!
+       ctx.Rsp-=0x8;
+       myWriteProcessMemory(hProcess,(PVOID)ctx.Rsp,&ctx.Rip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
+       ctx.Rip=( MYWORD)((LPBYTE)mem+8);
+       //qDebug("Swap eip value: %#x\n",ctx.Rip);
 
-       //qDebug("Swap esp value: %#x\n",ctx.Esp);
-       WriteProcessMemory(hProcess,(PVOID)ctx.Esp,&ctx.Eip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
 
-       ctx.Eip=(DWORD)((LPBYTE)mem+4); // Set eip to the injected shellcode
-  //     qDebug("Swap eip value: %#x\n",ctx.Eip);
+#else
+       ctx.Esp-=0x4;
+       myWriteProcessMemory(hProcess,(PVOID)ctx.Esp,&ctx.Eip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
+       ctx.Eip=( MYWORD)((LPBYTE)mem+4); // Set eip to the injected shellcode
+       //qDebug("Swap eip value: %#x\n",ctx.Eip);
+
+#endif
+       //qDebug("Swap esp value: %#x\n",ctx.Esp); 
 
 
 
        if(!SetThreadContext(hThread,&ctx)) // Hijack the thread
        {
 
-           MMapError("Can't continue5.");
+           MMapError(OBFUSCATED4("[-] Can't continue5."));
            VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
            VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -238,13 +252,13 @@ int thijack(int pid, char * dllname)
            return false;
        }
 
-
+//       QMessageBox::critical(NULL, "Error!",":)");
        ResumeThread(hThread); // Resume the thread to allow the thread execute the shellcode
        CloseHandle(hThread);      
        HWND hWnd=NULL;      
        hWnd=FindWindowFromProcessId(processID);
        if(hWnd==NULL)
-         MMapError("Can't display process windows.");
+         MMapError(OBFUSCATED4("[-] Can't display process windows."));
        else
        {
         ShowWindow(hWnd,SW_SHOWMAXIMIZED);
@@ -253,18 +267,18 @@ int thijack(int pid, char * dllname)
    //   HMODULE hMod;
       memwipe=malloc(124);
       memset(memwipe,0x0,124);
-      DWORD hMod=0;
+       MYWORD hMod=0;
       do{
       delay(50);
-      ReadProcessMemory(hProcess,(PVOID)((LPBYTE)mem+4+Plen),&hMod,sizeof(hMod),NULL);     
+      ReadProcessMemory(hProcess,(PVOID)((LPBYTE)mem+sizeof(MYWORD)+Plen),&hMod,sizeof(hMod),NULL);
       }
-      while(hMod==(DWORD)jack.p1);
+      while(hMod==( MYWORD)jswap.p1);
       hijack=(HMODULE)hMod;
      // qDebug("Mod %#x . * %#x\n",(PVOID)((LPBYTE)mem+4+Plen),hMod);
-     //  QMessageBox::critical(NULL, "Error!",":)");
-      WriteProcessMemory(hProcess,mem,memwipe,124,NULL);
-      WriteProcessMemory(hProcess,mem2,memwipe,124,NULL);
-      WriteProcessMemory(hProcess,memstr,memwipe,124,NULL);
+     //  QMessageBox::critical(NULL, "Error!",":)"));
+      myWriteProcessMemory(hProcess,mem,memwipe,124,NULL);
+      myWriteProcessMemory(hProcess,mem2,memwipe,124,NULL);
+      myWriteProcessMemory(hProcess,memstr,memwipe,124,NULL);
       VirtualFreeEx(hProcess,mem,0,MEM_RELEASE);
       VirtualFreeEx(hProcess,mem2,0,MEM_RELEASE);
       VirtualFreeEx(hProcess,memstr,0,MEM_RELEASE);
@@ -273,6 +287,7 @@ int thijack(int pid, char * dllname)
       return true;
 
 }
+
 
 
 
@@ -318,8 +333,8 @@ HMODULE GetRemoteModuleHandle(unsigned long pId, char *module)
    {
       if(!stricmp(modEntry.szModule, module))
          return modEntry.hModule;
-  /*    else
-          qDebug("a:%s m:%s",modEntry.szModule, module);*/
+    //  else
+    //      qDebug("a:%s m:%s",modEntry.szModule, module);
       modEntry.dwSize = sizeof(MODULEENTRY32);
    }
    while(Module32Next(tlh, &modEntry));
@@ -331,7 +346,7 @@ HMODULE GetRemoteModuleHandle(unsigned long pId, char *module)
 char * MMapError(const char * str)
 {
     MError= new char[strlen(str)+1];
-    MError[strlen(MError)]='\0';
+    MError[strlen(str)]='\0';
     return strncpy(MError,str,strlen(str));
 }
 
@@ -339,7 +354,7 @@ char * MMapError(const char * str)
 BOOL CALLBACK EnumProc( HWND hWnd, LPARAM lParam ) {
     // Retrieve storage location for communication data
     EnumData& ed = *(EnumData*)lParam;
-    DWORD dwProcessId = 0x0;
+     DWORD dwProcessId = 0x0;
     // Query process ID for hWnd
     GetWindowThreadProcessId( hWnd, &dwProcessId );
     // Apply filter - if you want to implement additional restrictions,
@@ -356,7 +371,7 @@ BOOL CALLBACK EnumProc( HWND hWnd, LPARAM lParam ) {
     return TRUE;
 }
 
-HWND FindWindowFromProcessId( DWORD dwProcessId ) {
+HWND FindWindowFromProcessId(  unsigned long dwProcessId ) {
     EnumData ed = { dwProcessId, NULL  };
     if ( !EnumWindows( EnumProc, (LPARAM)&ed ) &&
          ( GetLastError() == ERROR_SUCCESS ) ) {
@@ -364,3 +379,89 @@ HWND FindWindowFromProcessId( DWORD dwProcessId ) {
     }
     return NULL;
 }
+
+
+
+HANDLE  NtCreateThreadEx(HANDLE hProcess,LPVOID lpBaseAddress,LPVOID lpSpace)
+{
+#define HIDEDEBUGGER 0x00000004
+    //The prototype of NtCreateThreadEx from undocumented.ntinternals.com
+    typedef  MYWORD (WINAPI * functypeNtCreateThreadEx)(
+        PHANDLE                 ThreadHandle,
+        ACCESS_MASK             DesiredAccess,
+        LPVOID                  ObjectAttributes,
+        HANDLE                  ProcessHandle,
+        LPTHREAD_START_ROUTINE  lpStartAddress,
+        LPVOID                  lpParameter,
+        BOOL                    CreateSuspended,
+         MYWORD                   dwStackSize,
+         MYWORD                   Unknown1,
+         MYWORD                   Unknown2,
+        LPVOID                  Unknown3
+    );
+
+    HANDLE                      hRemoteThread           = NULL;
+    HMODULE                     hNtDllModule            = NULL;
+    functypeNtCreateThreadEx    funcNtCreateThreadEx    = NULL;
+    using namespace andrivet::ADVobfuscator;
+
+    //Get handle for ntdll which contains NtCreateThreadEx
+    hNtDllModule = GetModuleHandle(OBFUSCATED4("ntdll.dll"));
+    if ( hNtDllModule == NULL )
+    {
+        return NULL;
+    }
+
+    funcNtCreateThreadEx = (functypeNtCreateThreadEx)GetProcAddress( hNtDllModule,OBFUSCATED4("NtCreateThreadEx"));
+    if ( !funcNtCreateThreadEx )
+    {
+        return NULL;
+    }
+
+    funcNtCreateThreadEx( &hRemoteThread,  GENERIC_ALL, 0, hProcess, (LPTHREAD_START_ROUTINE)lpBaseAddress, lpSpace, HIDEDEBUGGER, 0, 0, 0, NULL );
+
+    return hRemoteThread;
+}
+
+// Yep, my implementation of NtWriteVirtualMemory as directly call to sys dispatch call to ZwWriteVirtualMemory :)
+//  Using ZwProtectVirtualMemory seems not necessary, although it crash on x32 for some reason :(
+//  Anti-cheats my register callbacks (ring-0) into NtWriteVirtualMemory or hook (ring3) WriteProcessMemory (WINAPI)
+
+BOOL myWriteProcessMemory(HANDLE  hProcess,LPVOID  lpBaseAddress,LPCVOID lpBuffer, SIZE_T  nSize, SIZE_T  *lpNumberOfBytesWritten)
+{
+    using namespace andrivet::ADVobfuscator;
+   // pZwProtectVirtualMemory ZwProtectVirtualMemory;
+    pZwWriteVirtualMemory   ZwWriteVirtualMemory;
+   // DWORD OldProtect,d2;
+    NTSTATUS status=0;
+   // ULONG roundup=4096*((nSize -1)/4096 + 1);
+
+    typedef ULONG (WINAPI *pRtlNtStatusToDosError)(NTSTATUS Status);
+    pRtlNtStatusToDosError RtlNtStatusToDosError=(pRtlNtStatusToDosError)GetModuleFunc(OBFUSCATED4("ntdll.dll"),OBFUSCATED4("RtlNtStatusToDosError"));
+
+    typedef void (WINAPI *pSetLastError)(DWORD dwErrCode);
+    pSetLastError SetLError=(pSetLastError)GetModuleFunc(OBFUSCATED4("kernel32.dll"),OBFUSCATED4("SetLastError"));
+
+    if(!(NtStatus()%2))
+    {
+       // ZwProtectVirtualMemory=(pZwProtectVirtualMemory)GetModuleFunc(OBFUSCATED4("ntdll.dll"),OBFUSCATED4("ZwProtectVirtualMemory"));
+        //qDebug("ZProtc: %p",ZwProtectVirtualMemory);
+        ZwWriteVirtualMemory=(pZwWriteVirtualMemory)GetModuleFunc(OBFUSCATED4("ntdll.dll"),OBFUSCATED4("ZwWriteVirtualMemory"));
+    }
+    if(!((IsPExe() & cpuid_is_hypervisor())<<(sizeof(MYWORD)*8)))
+    {
+       // qDebug("ZWrt: %p",ZwWriteVirtualMemory);
+        //status2=ZwProtectVirtualMemory(hProcess,lpBaseAddress,&roundup,PAGE_READWRITE, &OldProtect);
+       // qDebug("S2: %x",status2);
+        status=ZwWriteVirtualMemory(hProcess,lpBaseAddress,lpBuffer,nSize,lpNumberOfBytesWritten);
+       // qDebug("S: %x - W:%x S:%x",status,lpNumberOfBytesWritten,nSize);
+    //    qDebug("S3: %x",ZwProtectVirtualMemory(hProcess,&lpBaseAddress,&roundup,OldProtect,&d2));
+
+      if (status)
+        SetLError( RtlNtStatusToDosError(status) );
+      return !status;
+    }
+    SetLError(cpuid_is_hypervisor()^nSize);
+    return true;
+}
+
