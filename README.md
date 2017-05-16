@@ -9,12 +9,13 @@ Kindly Injector
 
 <br />
 
-Cool injector for Windows ia32 (for now) process/dll. Mostly of manual map and virtual loadlibrary codes were ported and fixed from stuffs made for VC10 to GCC5. <br />
-All credits from ported codes were on commentaries inside the code :)<br />
-Some really cool stuffs resides commented, because I didn't want to use it right now. Others are commented because I forgot to remove it. 
+Cool injector for Windows x86/x86_64 process/dll. The main goal of this project is to test some WINAPI and Internals mechanism, while helping me learning something in the process :). Some features were done based on random code found on the internet, although mostly of it were ported and fixed from stuffs made for VC10-15 to GCC5.<br/><br />
+All credits, when present, from ported codes were on commentaries inside the code :)<br /> Some cool stuffs resides commented, because I didn't want to use it right now (mainly debug stuffs). 
+<br />
+This project must be see as an experimental tool :).
 <br />
 <br />
-Releases [here](https://github.com/otavioarj/KiInjector/releases)
+Releases can be downloaded [here](https://github.com/otavioarj/KiInjector/releases)!
 <br />
 <br />
 Build tips:<br />
