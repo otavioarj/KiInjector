@@ -12,12 +12,12 @@ _Pload:
 	start: 
 		pop ecx
 		sub ecx,7
-	lea eax,[ecx+26] # não é mais 21, aumenta com o 2o lea!
+	lea eax,[ecx+26] 
 	push ecx
 	push eax
 	call dword ptr [ecx-4] 	  
 	 pop ecx	
-     mov [ecx+26],eax   # salva o retorno da função lá (tem 4 bytes se for maior atropela esse stup, oq é de boa, após o return n importa mais)
+     mov [ecx+26],eax   
 	 popfd 
 	 popad 
 	 ret
@@ -40,13 +40,13 @@ _Pload2:
 	start2: 
 		pop ecx
 		sub ecx,7
-	lea eax,[ecx+27] # não é mais 21, aumenta com o 2o lea!
+	lea eax,[ecx+27] 
 	push ecx
 	push eax
 	call dword ptr [ecx-4] 	
-     pop ebx # coloquei pra dar um fix, o loadll rola sem isso
+     pop ebx 
 	 pop ecx	
-     mov [ecx+27],eax   # salva o retorno da função lá (tem 4 bytes se for maior atropela esse stup, oq é de boa, após o return n importa mais)
+     mov [ecx+27],eax   
 	 popfd 
 	 popad 
 	 ret
