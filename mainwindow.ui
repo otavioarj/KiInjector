@@ -17,7 +17,7 @@
    <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
-   <string notr="true" extracomment="SuperNanny 4.0">Ki Injector 4.4</string>
+   <string notr="true" extracomment="Ki Injector 4.4">Ki Injector 4.4</string>
   </property>
   <property name="windowIcon">
    <iconset>
