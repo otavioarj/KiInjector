@@ -3,14 +3,17 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QProcess>
-#include <QTextCodec>
+//#include <QTextCodec>
 #define error(X, Y) {errorp(X,Y); return 0;}
 #define uimsg(X) ui->plainTextEdit->appendPlainText(X);
 #include "antis.h"
 
 
 
-#define Version "Ki Injector 4.0 - otavioarj"
+
+
+#define Version "Ki Injector 4.4 - otavioarj"
+
 
 #ifdef _WIN64
 #define CONF "conf64.txt"
@@ -19,9 +22,9 @@
 #endif
 
 int showin(DWORD processID ){
-    HWND hWnd=NULL;
+    HWND hWnd=nullptr;
     hWnd=FindWindowFromProcessId(processID);
-    if(hWnd==NULL)
+    if(hWnd==nullptr)
     {
         using namespace andrivet::ADVobfuscator;
         MMapError(OBFUSCATED4("[-] Can't display process windows."));
@@ -52,6 +55,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     using namespace andrivet::ADVobfuscator;
+    QApplication::setStyle("windows");
     // isInitialized = false;
     ui->setupUi(this);
     // this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint | Qt::WindowMinimizeButtonHint );// | Qt::WindowCloseButtonHint);
@@ -103,7 +107,6 @@ MainWindow::MainWindow(QWidget *parent) :
         if(nt->Signature==IMAGE_NT_SIGNATURE)
         {
 
-            // nt->OptionalHeader.SizeOfImage=0x100000;
             VirtualProtect((LPVOID)base,nt->OptionalHeader.SizeOfHeaders, PAGE_READWRITE, &OldProtect);
             ZeroMemory((LPVOID)base,nt->OptionalHeader.SizeOfHeaders);
             VirtualProtect((LPVOID)base,nt->OptionalHeader.SizeOfHeaders,OldProtect,NULL);
@@ -140,18 +143,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 #ifndef _WIN64
-        ui->label_3->setText(QString(OBFUSCATED4("Arch: x32")));
+    ui->label_3->setText(QString(OBFUSCATED4("Arch: x32")));
 #else
-        ui->label_3->setText(QString(OBFUSCATED4("Arch: x64")));
+    ui->label_3->setText(QString(OBFUSCATED4("Arch: x64")));
 #endif
 
 
 
 #ifdef DEV
-       QMessageBox::critical(NULL,OBFUSCATED4("Dev!"),OBFUSCATED4(":("));
-     //  char ai[64];
+    QMessageBox::critical(NULL,OBFUSCATED4("Dev!"),OBFUSCATED4(":("));
+    //  char ai[64];
     //   sprintf(ai,"% d %d",test,test2);
-   //   QMessageBox::critical(NULL, "Vm",QString(ai));
+    //   QMessageBox::critical(NULL, "Vm",QString(ai));
 #endif
 
 }
@@ -187,7 +190,7 @@ int  MainWindow::IsUserAdmin()
 
 void MainWindow::on_toolButton_clicked()
 {
-     using namespace andrivet::ADVobfuscator;
+    using namespace andrivet::ADVobfuscator;
     if(!(test<<sizeof(MYWORD)*8))
     {
         QString fileName = QFileDialog::getOpenFileName(this, tr(OBFUSCATED4("Open Dll")),"",tr(OBFUSCATED4("*.dll")));
@@ -233,7 +236,7 @@ void MainWindow::errorp(const char * str,bool e)
 
 void MainWindow::on_checkBox_toggled(bool checked)
 {
-     using namespace andrivet::ADVobfuscator;
+    using namespace andrivet::ADVobfuscator;
     ui->label_3->clear();
     //errorp("Execute as Admin!!",true);
     if(ui->line1->text().length()<1 && ui->line2->text().length()<1)
@@ -462,17 +465,17 @@ void MainWindow::on_pushButton_clicked()
                         Proc = OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE, FALSE, pID);
                         if(ui->checkBox_7->isChecked() ||  ui->comboBox->currentIndex()==2) //(ui->comboBox->currentIndex()==3)
                             hDLL=hijack;
-                       // VirtualProtect(hDLL, 4096, PAGE_READWRITE, &OldProtect);
+                        // VirtualProtect(hDLL, 4096, PAGE_READWRITE, &OldProtect);
                         memset(wiper,0x0,4096);
                         myWriteProcessMemory(Proc,hDLL,wiper,4096,NULL);
                         //   qDebug("Ae2 \n",dl);
-                       // VirtualProtect(hDLL, 4096, OldProtect,NULL);
+                        // VirtualProtect(hDLL, 4096, OldProtect,NULL);
                         ui->plainTextEdit->appendPlainText(OBFUSCATED4("[+] DLL Header wiped!"));
                         free(wiper);
                         CloseHandle(Proc);
                     }
                     else if(!(hDLL=GetRemoteModuleHandle(pID,dl)))
-                            errorp(OBFUSCATED4("[-] Can't find DLL Header!"),false);
+                        errorp(OBFUSCATED4("[-] Can't find DLL Header!"),false);
                     else
                         errorp(OBFUSCATED4("[-] Can't wipe DLL Header!"),false);
                     free(dl);
@@ -541,12 +544,12 @@ int MainWindow::Inject(int pID, const char * DLL_NAME)
         else
         {
 
-             //  wchar_t* sModuleName = new wchar_t[MAX_PATH];
-             //  mbstowcs(sModuleName,OBFUSCATED4("kernel32.dll"), MAX_PATH);
-           // auto load2=GetProcAddress(GetModuleHandle("kernel32.dll"),"LoadLibraryA");
+            //  wchar_t* sModuleName = new wchar_t[MAX_PATH];
+            //  mbstowcs(sModuleName,OBFUSCATED4("kernel32.dll"), MAX_PATH);
+            // auto load2=GetProcAddress(GetModuleHandle("kernel32.dll"),"LoadLibraryA");
             if((LoadLibAddy=(void *) GetModuleFunc(OBFUSCATED4("kernel32.dll"),(LPCSTR) OBFUSCATED4("LoadLibraryA")))==NULL)
                 error(OBFUSCATED4("[-] GetProcAddress failed."),true );
-           //qDebug("M: %p U:%p",LoadLibAddy,load2);
+            //qDebug("M: %p U:%p",LoadLibAddy,load2);
 
             // Allocate space in the process for our DLL
             if((RemoteString = VirtualAllocEx(Proc, NULL, strlen(DLL_NAME), MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE))==NULL)
@@ -585,7 +588,7 @@ int MainWindow::Inject(int pID, const char * DLL_NAME)
         break;
     case 1:
         if(!IsUserAdmin())
-            error(OBFUSCATED4("[*] Not Admin. If it fail, run as Admin!"),false);
+            error(OBFUSCATED4("[*] Not Admin. If it fails, run as Admin!"),false);
         uimsg(OBFUSCATED4("[*] Using NtCreateThreadEx."));
         if(NtCreateThreadEx(Proc, LoadLibAddy, (LPVOID)RemoteString)==NULL){
             errorp(OBFUSCATED4("[-] NtCreateThreadEx failed."),true); return 0;}
@@ -607,7 +610,7 @@ int MainWindow::Inject(int pID, const char * DLL_NAME)
         break;
     case 2:
         if(!IsUserAdmin())
-            error(OBFUSCATED4("[*] Not Admin! If it fail, run as Admin!"),false);
+            error(OBFUSCATED4("[*] Not Admin! If it fails, run as Admin!"),false);
         DLL=(char *)malloc(strlen(DLL_NAME));
         strcpy(DLL,DLL_NAME);
         uimsg(OBFUSCATED4("[*] Using ManualMap"));
@@ -837,6 +840,11 @@ void MainWindow::on_radioButton_clicked()
         return;
     }
 
+    if((f=fopen(OBFUSCATED4(CONF),OBFUSCATED4("w"))))
+    {
+        fprintf(f,OBFUSCATED4("%s : %s \n"),ui->line1->text().toStdString().c_str(),ui->line2->text().toStdString().c_str());
+        fclose(f);
+    }
     is=QProcess::startDetached( QString(cmd));
 
 

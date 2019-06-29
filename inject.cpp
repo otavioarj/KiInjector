@@ -3,7 +3,7 @@
 #include "inject.h"
 #include "mainwindow.h"
 #include "antis.h"
-//#include <QDebug>
+#include <QDebug>
 #include <QMessageBox>
 
 char * MError= NULL;
@@ -51,12 +51,6 @@ int hijack_stub_delay=0;
     return ( DWORD)0;
 }
 
-
-
-
-// http://www.rohitab.com/discuss/topic/40579-dll-injection-via-thread-hijacking/
-// http://stackoverflow.com/questions/8374449/equivalent-for-gccs-naked-attribute/8375416#8375416
-// LoadDLL na mão loadll.cpp
 
 int thijack(int pid, char * dllname)
 {
@@ -117,7 +111,6 @@ int thijack(int pid, char * dllname)
        }
 
 
-    //   printf("\nAllocating memory in target process.\n"));
       hProcess=OpenProcess(PROCESS_VM_OPERATION | PROCESS_VM_WRITE | PROCESS_VM_READ,FALSE,processID);
       if(hProcess==NULL)
       {
@@ -175,8 +168,6 @@ int thijack(int pid, char * dllname)
 
    //   qDebug("GetModHand: %#x\n Addr: %#x",GetModuleHandleA,  GetProcAddress);
 
-      // printf("\nWriting the shellcode, LoadLibraryA address and DLL path into target process.\n"));
-
        if(!myWriteProcessMemory(hProcess,mem,&LoadLibraryA_Addr,sizeof(PVOID),NULL))
         {
           MMapError(OBFUSCATED4("[-] Can't continue2."));
@@ -221,7 +212,7 @@ int thijack(int pid, char * dllname)
 
   //     qDebug("Current eip value: %#x\n",ctx.Eip);
  //      qDebug("Current esp value: %#x\n",ctx.Esp);
-#ifdef _WIN64    // Decrement esp to simulate a push instruction. Without this the target process will crash when the shellcode returns!
+#ifdef _WIN64
        ctx.Rsp-=0x8;
        myWriteProcessMemory(hProcess,(PVOID)ctx.Rsp,&ctx.Rip,sizeof(long int),NULL); // Write orginal eip into target thread's stack
        ctx.Rip=( MYWORD)((LPBYTE)mem+8);
@@ -425,7 +416,8 @@ HANDLE  NtCreateThreadEx(HANDLE hProcess,LPVOID lpBaseAddress,LPVOID lpSpace)
 
 // Yep, my implementation of NtWriteVirtualMemory as directly call to sys dispatch call to ZwWriteVirtualMemory :)
 //  Using ZwProtectVirtualMemory seems not necessary, although it crash on x32 for some reason :(
-//  Anti-cheats my register callbacks (ring-0) into NtWriteVirtualMemory or hook (ring3) WriteProcessMemory (WINAPI)
+//  Some anti-cheats my register callbacks (ring-0) into NtWriteVirtualMemory or hook (ring3) WriteProcessMemory (WINAPI)
+//  Others register callbacks for ZwProtectVirtualMemory also, be sharp! :}
 
 BOOL myWriteProcessMemory(HANDLE  hProcess,LPVOID  lpBaseAddress,LPCVOID lpBuffer, SIZE_T  nSize, SIZE_T  *lpNumberOfBytesWritten)
 {

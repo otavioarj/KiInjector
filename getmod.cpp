@@ -122,7 +122,8 @@ LPVOID GetModuleFunc(LPCSTR csModuleName, LPCSTR sFuncName)
 
 	// Calculate the size of the input string
 	int iLenModule = 0;
-	for (; sModuleName[iLenModule]; ++iLenModule);
+    for (; sModuleName[iLenModule]; ++iLenModule)
+        ;
    //  printf("A2\n");
 
     PLDR_DATA_TABLE_ENTRY pModEntry;
@@ -260,27 +261,27 @@ LPVOID GetModuleFunc(LPCSTR csModuleName, LPCSTR sFuncName)
 								}
 							}
 							// Call again with forwarded data
-                            delete sModuleName;
+                            delete[] sModuleName;
                             wcstombs(cFord,sForwarderDll,wcslen(sForwarderDll));
                             return GetModuleFunc(cFord, sForwarderFunc);
 						}
                         else{
-                             delete sModuleName;
+                             delete[] sModuleName;
 							// That's pretty much it. Return address of the function
 							return reinterpret_cast<LPVOID>(reinterpret_cast<ULONG_PTR>(pImageDOSHeader) + dwExportRVA);
                         }
 					}
-                    delete sModuleName;
+                    delete[] sModuleName;
 					// Wanted export in this module doesn't exist
 					return nullptr;
 				}
-                delete sModuleName;
+                delete[] sModuleName;
 				// No exports
 				return nullptr;
 			}
 		}
 	}
-    delete sModuleName;
+    delete[] sModuleName;
 	// Not such module found
 	return nullptr;
 }

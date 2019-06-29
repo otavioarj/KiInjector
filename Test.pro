@@ -37,7 +37,7 @@ DEFINES += QT_NO_DEBUG QT_NO_CAST_TO_ASCII
 DEFINES -= QT_LARGEFILE_SUPPORT UNICODE
 
 
-#CONFIG += DEV
+CONFIG += windows #DEV
 
 
 DEV{
@@ -56,20 +56,12 @@ RC_FILE = myrc.rc
 #RESOURCES = a.qrc
 
 #QMAKE_CFLAGS   = -Ofast -march=native  -fomit-frame-pointer    -Wno-missing-field-initializers -fpermissive
-QMAKE_CXXFLAGS =  -Ofast -fomit-frame-pointer  -march=native -Wno-shift-count-overflow -Wno-unused-local-typedefs   -Wno-missing-field-initializers -Wno-format -fpermissive
-#  -LC:/Qt/Static2/5.7/plugins/platforms -LC:/Qt/Static2/5.7/plugins/imageformats  -lqico -lQt5Core
+QMAKE_CXXFLAGS =  -O2 -fomit-frame-pointer  -march=sandybridge -Wno-shift-count-overflow -Wno-unused-local-typedefs -Wno-attributes -Wno-int-in-bool-context -Wno-missing-field-initializers -Wno-format -fpermissive
 
-QMAKE_LIBS =   -Wl,-Bstatic -lstdc++ -lpthread -Wl,-Bdynamic  -lgdi32 -luser32 -lkernel32
-
+QMAKE_LIBS =  -Wl,-Bdynamic -lgdi32 -luser32 -lkernel32 -lpsapi -lShlwapi  -lOleAut32
+QMAKE_LFLAGS = -static-libstdc++ -static-libgcc -lpthread
 #QMAKE_LIBS =   -Wl,-Bstatic -lstdc++ -lpthread -lqtmain  -LC:/Qt/Static2/5.7/plugins/platforms -lqwindows  -LC:/Qt/Static2/5.7/plugins/imageformats -lqico -lQt5Core -Wl,-Bdynamic  -lgdi32 -luser32 -lkernel32
 
-#QMAKE_LIBS =  -lmingw32 -lqtmain -lQt5Widgets -LC:/Qt/Static2/5.7/plugins/platforms -lqwindows -lwinspool -lQt5PlatformSupport -lqtfreetype -LC:/Qt/Static2/5.7/plugins/imageformats -lqdds -lqicns -lqico -lqtga -lqtiff -lqwbmp -lqwebp -lQt5Gui -lcomdlg32 -loleaut32 -limm32 -lwinmm -lglu32 -lopengl32 -lgdi32 -lqtharfbuzzng -lQt5Core -lole32 -luuid -lws2_32 -ladvapi32 -lshell32 -luser32 -lkernel32 -lmpr -lqtpcre
-
-
-QMAKE_LFLAGS  = -static-libgcc  -static-libstdc++ -s # -Wl,-s
-
-
-QMAKE_LIBS += -Wl,-Bdynamic -lpsapi -lShlwapi  -lOleAut32
 
 DISTFILES += \
-    myrc.rc
+    myrc.rc \

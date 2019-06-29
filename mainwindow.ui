@@ -3,7 +3,7 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="windowModality">
-   <enum>Qt::NonModal</enum>
+   <enum>Qt::WindowModal</enum>
   </property>
   <property name="geometry">
    <rect>
@@ -17,20 +17,17 @@
    <enum>Qt::StrongFocus</enum>
   </property>
   <property name="windowTitle">
-   <string notr="true" extracomment="Kiljector 4.0">Kiljector 4.0</string>
+   <string notr="true" extracomment="SuperNanny 4.0">Ki Injector 4.4</string>
   </property>
   <property name="windowIcon">
    <iconset>
     <normaloff>:/a.ico</normaloff>:/a.ico</iconset>
   </property>
   <property name="locale">
-   <locale language="Russian" country="Russia"/>
+   <locale language="English" country="UnitedStates"/>
   </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
-  </property>
-  <property name="dockNestingEnabled">
-   <bool>true</bool>
   </property>
   <property name="unifiedTitleAndToolBarOnMac">
    <bool>false</bool>
@@ -399,7 +396,7 @@
        <enum>QTabWidget::Triangular</enum>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <property name="elideMode">
        <enum>Qt::ElideNone</enum>

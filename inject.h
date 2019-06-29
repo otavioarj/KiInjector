@@ -4,11 +4,11 @@
 #define WIN32_LEAN_AND_MEAN
 //#define _WIN32_WINNT 0x500
 #include <windows.h>
-#include <Psapi.h>
+#include <psapi.h>
 //#include <cstdio>
 #include <tlhelp32.h>
 #include <shlwapi.h>
-#include <Ntsecapi.h>
+#include <ntsecapi.h>
 
 #ifdef __x86_64__
 #define MYWORD   DWORD64

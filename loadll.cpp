@@ -4,25 +4,6 @@
 
 HMODULE WINAPI LoadDll(pdata *points){
 	
- /*   typedef struct _UNICODE_STRING { // UNICODE_STRING structure
-             USHORT Length;
-             USHORT MaximumLength;
-             PWSTR  Buffer;
-    } UNICODE_STRING;
-    typedef UNICODE_STRING *PUNICODE_STRING;
-
-
-    typedef long (WINAPI *fLdrLoadDll) //LdrLoadDll function prototype
-        (
-             IN PWCHAR PathToFile OPTIONAL,
-             IN ULONG Flags OPTIONAL,
-             IN PUNICODE_STRING ModuleFileName,
-             OUT PHANDLE ModuleHandle
-        );*/
-
-
-
-
     fLdrLoadDll _LdrLoadDll=(fLdrLoadDll)points->p1;
     UNICODE_STRING str;
     str= points->p2;
@@ -86,8 +67,8 @@ MYWORD WINAPI LoadDll2(PVOID p)
     pIID=ManualInject->ImportDirectory;
 
     // Resolve DLL imports
-    i=0;
-    i--;
+    i=-1;
+    //i--;
     while(pIID->Characteristics)
     {
         OrigFirstThunk=(PIMAGE_THUNK_DATA)((LPBYTE)ManualInject->ImageBase+pIID->OriginalFirstThunk);
